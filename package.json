@@ -1,0 +1,17 @@
+{
+    "description": "A bootstrap theme switcher for Computer Science House.",
+    "keywords": [
+        "bootstrap",
+        "CSH"
+    ],
+    "name": "cshthemeswitcher",
+    "devDependencies": {
+        "grunt": "^1.0.2",
+        "npm": "^5.7.1"
+    },
+    "dependencies": {
+        "angular": "^1.6.9",
+        "grunt-contrib-connect": "^1.0.2",
+        "jquery": "^3.3.1"
+    }
+}
