@@ -14,6 +14,11 @@ app.controller("ThemeSwitcherController", ['$scope', '$http', function($scope, $
     $scope.themes = response;
   });
 
+  $scope.cdn = "https://s3.csh.rit.edu/csh-material-bootstrap/4.0.0/dist/csh-material-bootstrap.min.css";
+  $scope.cssFunc = function (link) {
+    $scope.cdn = link;
+  };
+
   //Get sso info
   $scope.name = "";
   $scope.profile = "";
