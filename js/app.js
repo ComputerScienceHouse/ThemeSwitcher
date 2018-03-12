@@ -14,4 +14,17 @@ app.controller("ThemeSwitcherController", ['$scope', '$http', function($scope, $
     $scope.themes = response;
   });
 
+  //Get sso info
+  $scope.name = "";
+  $scope.profile = "";
+  var imgStr = "https://profiles.csh.rit.edu/image/"
+  $http.get("https://members.csh.rit.edu/sso/redirect?info=json").success(function (response) {
+    $scope.profile = imgStr.concat(response.id_token.preferred_username);
+    $scope.name = response.userinfo.given_name + " " + response.userinfo.family_name;
+  }).error(function (error) { 
+    console.error("Error getting sso");
+    $scope.profile = imgStr.concat("test");
+    $scope.name = "Test";
+  });
+
 }]);
