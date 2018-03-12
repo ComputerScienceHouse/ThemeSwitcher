@@ -1,0 +1,10 @@
+[
+  {
+    "name": "Material",
+    "cdn": "https://s3.csh.rit.edu/csh-material-bootstrap/4.0.0/dist/csh-material-bootstrap.min.css"
+  },
+  {
+    "name": "Pride",
+    "cdn": "https://s3.csh.rit.edu/csh-pride-bootstrap/4.0.0/dist/csh-material-bootstrap.min.css"
+  }
+]

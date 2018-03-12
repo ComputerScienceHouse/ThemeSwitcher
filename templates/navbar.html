@@ -7,7 +7,39 @@
     </button>
 
     <!-- TODO Dropdown for theme selection-->
-    
+    <div class="collapse navbar-collapse align-center" id="navbarColor01">
+      <ul class="nav navbar-nav mr-auto my-2">
+        <li class="nav-item navbar-user dropdown" >
+          <a class="nav-link dropdown-toggle bg-primary text-white mt-2" data-toggle="dropdown" href="#" id="nav-drop" aria-expanded="false">
+            Themes
+          </a>
+          <div class="dropdown-menu" aria-labelledby="nav-drop">
+            <div data-ng-repeat="theme in themes">
+              <div class="dropdown-item">
+                {{ theme.name }}
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+
+      <!-- User and logout -->
+      <ul class="nav navbar-nav ml-auto my-2">
+        <li class="nav-item navbar-user dropdown" >
+          <a class="nav-link dropdown-toggle bg-primary text-white mt-2" data-toggle="dropdown" href="#" id="nav-drop" aria-expanded="false">
+            <img ng-src="{{profile}}"> {{ name }}
+          </a>
+          <div class="dropdown-menu" aria-labelledby="nav-drop">
+            <div id="show-icons" class="float-right checkbox dropdown-item">
+              <label><input type="checkbox" ng-model="showIcons" ng-click="saveIconSetting()" /> Show Icons</label>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="https://members.csh.rit.edu/sso/logout">Logout</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+
   </div>
 </nav>
 <!-- /.navbar -->

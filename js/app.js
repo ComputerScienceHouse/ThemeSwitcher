@@ -9,4 +9,9 @@ app.directive("navbar", function() {
 
 app.controller("ThemeSwitcherController", ['$scope', '$http', function($scope, $http) {
 
+  $scope.themes = [];
+  $http.get("./data/themes.json").success(function(response) {
+    $scope.themes = response;
+  });
+
 }]);
