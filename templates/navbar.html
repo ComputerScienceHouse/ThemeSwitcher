@@ -6,8 +6,8 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- TODO Dropdown for theme selection-->
     <div class="collapse navbar-collapse align-center" id="navbarColor01">
+      <!-- Dropdown for theme selection-->
       <ul class="nav navbar-nav mr-auto my-2">
         <li class="nav-item navbar-user dropdown" >
           <a class="nav-link dropdown-toggle bg-primary text-white mt-2" data-toggle="dropdown" href="#" id="nav-drop" aria-expanded="false">
@@ -20,24 +20,13 @@
           </div>
         </li>
       </ul>
-
-      <!-- User and logout -->
-      <ul class="nav navbar-nav ml-auto my-2">
-        <li class="nav-item navbar-user dropdown" >
-          <a class="nav-link dropdown-toggle bg-primary text-white mt-2" data-toggle="dropdown" href="#" id="nav-drop" aria-expanded="false">
-            <img ng-src="{{profile}}"> {{ name }}
-          </a>
-          <div class="dropdown-menu" aria-labelledby="nav-drop">
-            <div id="show-icons" class="float-right checkbox dropdown-item">
-              <label><input type="checkbox" ng-model="showIcons" ng-click="saveIconSetting()" /> Show Icons</label>
-            </div>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="https://members.csh.rit.edu/sso/logout">Logout</a>
-          </div>
-        </li>
-      </ul>
+      
+      <!-- User image and name -->
+      <div class="nav-item navbar-user text-white mt-2">
+        <img ng-src="{{ profile }}"> {{ name }}
+      </div>
+      
     </div>
-
   </div>
 </nav>
 <!-- /.navbar -->
