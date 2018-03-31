@@ -7,6 +7,13 @@ app.directive("navbar", function() {
   }
 });
 
+app.directive("preview", function() {
+  return {
+    restrict: "E",
+    templateUrl: "templates/preview.html"
+  }
+})
+
 app.controller("ThemeSwitcherController", ['$scope', '$http', function($scope, $http) {
 
   $scope.themes = [];
