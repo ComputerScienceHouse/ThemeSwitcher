@@ -15,17 +15,6 @@ app.directive("preview", function() {
 })
 
 app.controller("ThemeSwitcherController", ['$scope', '$http', function($scope, $http) {
-
-  $scope.themes = [];
-  $http.get("./data/themes.json").success(function(response) {
-    $scope.themes = response;
-  });
-
-  $scope.cdn = "https://s3.csh.rit.edu/csh-material-bootstrap/4.0.0/dist/csh-material-bootstrap.min.css";
-  $scope.cssFunc = function (link) {
-    $scope.cdn = link;
-  };
-
   //Get sso info
   $scope.name = "";
   $scope.profile = "";
@@ -38,5 +27,15 @@ app.controller("ThemeSwitcherController", ['$scope', '$http', function($scope, $
     $scope.profile = imgStr.concat("test");
     $scope.name = "Test";
   });
+  
+  $scope.themes = [];
+  $http.get("./data/themes.json").success(function(response) {
+    $scope.themes = response;
+  });
+
+  $scope.cdn = "https://s3.csh.rit.edu/csh-material-bootstrap/4.0.0/dist/csh-material-bootstrap.min.css";
+  $scope.cssFunc = function (link) {
+    $scope.cdn = "https://s3.csh.rit.edu/" + link + "/4.0.0/dist/" + link + ".min.css";
+  };
 
 }]);
