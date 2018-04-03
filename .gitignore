@@ -1,12 +1,16 @@
-#OS Directory info files
+# macOS Directory info files
 .DS_Store
 
-#npm
+# npm
 node_modules/
 
-#General
+# General
 *.bak
 
-#Windows Directory info files
+# Windows Directory info files
 thumbs.db
 desktop.ini
+
+# Local config
+local/
+.env

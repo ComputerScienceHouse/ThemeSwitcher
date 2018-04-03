@@ -6,13 +6,18 @@
     ],
     "name": "cshthemeswitcher",
     "devDependencies": {
-        "grunt": "^1.0.2",
-        "grunt-contrib-connect": "^1.0.2",
-        "npm": "^5.7.1"
+        "npm": "^5.8.0"
     },
     "dependencies": {
         "angular": "^1.6.9",
         "bootstrap": "=4.0.0",
-        "jquery": "^3.3.1"
+        "connect-ensure-login": "^0.1.1",
+        "dotenv": "^5.0.1",
+        "express": "~4.0.0",
+        "express-session": "^1.15.6",
+        "jquery": "^3.3.1",
+        "mongoose": "^5.0.12",
+        "passport": "^0.4.0",
+        "passport-openidconnect": "0.0.2"
     }
 }
