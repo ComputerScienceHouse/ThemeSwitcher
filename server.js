@@ -15,7 +15,6 @@ db.once('open', function() {
   Member= mongoose.model('Member', memberSchema);
 });
 
-
 // Configure the OpenID Connect strategy for use by Passport.
 var passport = require('passport');
 var Strategy = require('passport-openidconnect').Strategy;
@@ -55,9 +54,6 @@ app.use(require('express-session')({ secret: process.env.EXPRESS_SESSION_SECRET,
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Serve the frontend
-app.use(express.static('pub'));
-
 // Authentication: authenticates with CSH OIDC and returns to origin point
 app.get('/login',
         passport.authenticate('openidconnect'));
@@ -68,9 +64,14 @@ app.get('/login/callback',
   res.redirect(req.session.returnTo);
 });
 
-// Retrieval
+// Require auth for everything after the auth pages.
+app.use( require('connect-ensure-login').ensureLoggedIn());
+
+// Serve the frontend
+app.use(express.static('pub'));
+
+// Retrieves the users DB record
 app.get('/api/:userID',
-        require('connect-ensure-login').ensureLoggedIn(),
         function(req, res) {
   Member.findOne({ 'uid': req.params.userID }, function(err, member) {
     var uid = req.user._json.preferred_username;
@@ -82,9 +83,8 @@ app.get('/api/:userID',
   });
 });
 
-// Write
+// Writes css to the user's DB record
 app.get('/api/:userID/:css',
-        require('connect-ensure-login').ensureLoggedIn(),
         function(req, res) {
   Member.findOne({ 'uid': req.params.userID}, function(err, member) {
     if(member == null) {
@@ -107,7 +107,8 @@ app.get('/api/:userID/:css',
   });
 });
 
-app.get('/who', require('connect-ensure-login').ensureLoggedIn(),
+// Returns the user for displaying the profile image and name.
+app.get('/who',
         function(req, res) {
   var uid = req.user._json.preferred_username;
   var name = req.user._json.given_name + " " + req.user._json.family_name;
