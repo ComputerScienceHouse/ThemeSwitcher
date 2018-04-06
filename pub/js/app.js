@@ -22,12 +22,14 @@ app.controller("ThemeSwitcherController", ['$scope', '$http', function($scope, $
     uid = response.uid;
     $scope.profile = imgStr.concat(response.uid);
     $scope.name = response.name;
-    $http.get("/api/" + uid).success( function (response) {
-      $scope.cdn = "https://s3.csh.rit.edu/" + response + "/4.0.0/dist/" + response + ".min.css";
-    });
+    $scope.cdn = "/api/" + uid;
+    //$http.get("/api/" + uid).success( function (response) {
+      //$scope.cdn = "https://s3.csh.rit.edu/" + response + "/4.0.0/dist/" + response + ".min.css";
+    //});
   }).error(function (error) { 
     $scope.profile = imgStr.concat("test");
     $scope.name = "Test";
+    $scope.cdn = "/api/test";
   });
 
   $scope.themes = [];
@@ -36,8 +38,8 @@ app.controller("ThemeSwitcherController", ['$scope', '$http', function($scope, $
   });
 
   $scope.cssFunc = function (link) {
-    $scope.cdn = "https://s3.csh.rit.edu/" + link + "/4.0.0/dist/" + link + ".min.css";
     $http.get("/api/" + uid + "/" + link);
+    $scope.cdn = "/api/" + uid;
   };
 
 }]);
