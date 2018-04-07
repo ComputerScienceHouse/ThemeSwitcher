@@ -76,7 +76,7 @@ app.get('/api/:userID',
   Member.findOne({ 'uid': req.params.userID }, function(err, member) {
     var uid = req.user._json.preferred_username;
     if(member != null && (member.uid === uid || uid === process.env.ADMIN_UID))
-    res.redirect("https://s3.csh.rit.edu/" + member.css + "/4.0.0/dist/" + member.css + ".min.css");
+      res.redirect("https://s3.csh.rit.edu/" + member.css + "/4.0.0/dist/" + member.css + ".min.css");
     else res.redirect("https://s3.csh.rit.edu/" + process.env.DEFAULT_CSS + "/4.0.0/dist/" + process.env.DEFAULT_CSS + ".min.css");
   });
 });
