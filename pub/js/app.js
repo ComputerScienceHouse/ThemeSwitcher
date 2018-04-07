@@ -1,5 +1,7 @@
+// Initialise angular
 var app = angular.module("themeswitcher", ['webicon']);
 
+// Pull the templates
 app.directive("navbar", function() {
   return {
     restrict: "E",
@@ -15,7 +17,9 @@ app.directive("preview", function() {
 })
 
 app.controller("ThemeSwitcherController", ['$scope', '$http', function($scope, $http) {
-  //Get sso info
+
+  // Pull uid and name from the api
+  // Sets the theme and gets profile image
   var uid = "test";
   var imgStr = "https://profiles.csh.rit.edu/image/"
   $http.get("/who").success(function (response) {
@@ -29,11 +33,13 @@ app.controller("ThemeSwitcherController", ['$scope', '$http', function($scope, $
     $scope.cdn = "/api/test";
   });
 
+  // Enumerates the themes dropdown
   $scope.themes = [];
   $http.get("data/themes.json").success(function(response) {
     $scope.themes = response;
   });
 
+  // Sets the theme selection via the api and hotswaps the page css
   $scope.cssFunc = function (link) {
     $http.get("/api/" + uid + "/" + link);
     $scope.cdn = "https://s3.csh.rit.edu/" + link + "/4.0.0/dist/" + link + ".min.css";
