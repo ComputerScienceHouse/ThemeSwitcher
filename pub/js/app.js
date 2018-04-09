@@ -21,16 +21,15 @@ app.controller("ThemeSwitcherController", ['$scope', '$http', function($scope, $
   // Pull uid and name from the api
   // Sets the theme and gets profile image
   var uid = "test";
-  var imgStr = "https://profiles.csh.rit.edu/image/"
+  var imgStr = "https://profiles.csh.rit.edu/image/";
+  $scope.cdn = "/api/get";
   $http.get("/who").success(function (response) {
     uid = response.uid;
     $scope.profile = imgStr.concat(response.uid);
     $scope.name = response.name;
-    $scope.cdn = "/api/" + uid;
   }).error(function (error) { 
     $scope.profile = imgStr.concat("test");
     $scope.name = "Test";
-    $scope.cdn = "/api/test";
   });
 
   // Enumerates the themes dropdown
@@ -41,7 +40,7 @@ app.controller("ThemeSwitcherController", ['$scope', '$http', function($scope, $
 
   // Sets the theme selection via the api and hotswaps the page css
   $scope.cssFunc = function (link) {
-    $http.get("/api/" + uid + "/" + link);
+    $http.get("/api/set/" + link);
     $scope.cdn = "https://s3.csh.rit.edu/" + link + "/4.0.0/dist/" + link + ".min.css";
   };
 

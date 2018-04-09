@@ -70,36 +70,32 @@ app.use( require('connect-ensure-login').ensureLoggedIn());
 app.use(express.static('pub'));
 
 // Retrieves the users DB record
-app.get('/api/:userID',
+app.get('/api/get',
         function(req, res) {
-  Member.findOne({ 'uid': req.params.userID }, function(err, member) {
-    var uid = req.user._json.preferred_username;
-    if(member != null && (member.uid === uid || uid === process.env.ADMIN_UID))
+  Member.findOne({ 'uid': req.user._json.preferred_username }, function(err, member) {
+    if(member != null)
       res.redirect("https://s3.csh.rit.edu/" + member.css + "/4.0.0/dist/" + member.css + ".min.css");
     else res.redirect("https://s3.csh.rit.edu/" + process.env.DEFAULT_CSS + "/4.0.0/dist/" + process.env.DEFAULT_CSS + ".min.css");
   });
 });
 
 // Writes css to the user's DB record
-app.get('/api/:userID/:css',
+app.get('/api/set/:css',
         function(req, res) {
-  Member.findOne({ 'uid': req.params.userID}, function(err, member) {
+  Member.findOne({ 'uid': req.user._json.preferred_username}, function(err, member) {
     if(member == null) {
       var u = new Member
-      ({ 'uid': req.params.userID, css: req.params.css });
+      ({ 'uid': req.user._json.preferred_username, css: req.params.css });
       u.save(function(err, u) {
         if(err) res.status(404).send("Failed to save to database."); // Failure
         else res.status(204).send(""); // Created
       });
     } else {
-      var uid = req.user._json.preferred_username;
-      if(member.uid === uid || uid === process.env.ADMIN_UID) {
-        member.css = req.params.css;
-        member.save(function(err, user) {
-          if(err) res.status(404).send("Failed to save to database."); // Failure
-          else res.status(204).send(""); // Success, no response
-        });
-      } else res.status(403).send("Bad Credentials"); // Bad creds
+      member.css = req.params.css;
+      member.save(function(err, user) {
+        if(err) res.status(404).send("Failed to save to database."); // Failure
+        else res.status(204).send(""); // Success, no response
+      });
     }
   });
 });

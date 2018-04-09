@@ -4,10 +4,13 @@ A service that allows the user to preview and select a bootstrap theme which can
 Themeswitcher uses node and express to serve the static site and preform api routing, OIDC for authentication, AngularJS for a responsive frontend, and bootstrap for styling.
 
 ## API
-**https://themeswitcher.csh.rit.edu/api/uid**
-Redirects to the theme selected by the user with username **uid**.
-If that user is not the currently logged in user, themeswitcher will return the default theme.
-If no user is logged in, it will force authentication. 
+**https://themeswitcher.csh.rit.edu/api/get**
+Redirects to the currently logged in member's theme.
+
+Implement as:
+```html
+<link rel="stylesheet" href="https://themeswitcher.csh.rit.edu/api/get" media="screen">
+```
 
 ## Contributing
 ### Pull Requests
