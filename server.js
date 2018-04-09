@@ -108,4 +108,14 @@ app.get('/who',
   res.status(202).send({"uid": uid, "name": name});
 });
 
+var git = require('git-rev');
+
+// Returns the current git revision
+app.get('/rev',
+        function(req, res) {
+  git.short(function(commit) {
+    res.status(200).send(commit);
+  });
+});
+
 app.listen(parseInt(process.env.PORT));

@@ -44,4 +44,11 @@ app.controller("ThemeSwitcherController", ['$scope', '$http', function($scope, $
     $scope.cdn = "https://s3.csh.rit.edu/" + link + "/4.0.0/dist/" + link + ".min.css";
   };
 
+  // Get the current git revision to append to the bottom of the page
+  $http.get("/rev").success(function(response) {
+    $scope.gitRev = response;
+  }).error(function (error) {
+    $scope.gitRev = "GitHub";
+  });
+
 }]);
