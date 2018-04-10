@@ -49,6 +49,13 @@ var app = express();
 // Configure session handling
 app.use(require('express-session')({ secret: process.env.EXPRESS_SESSION_SECRET, resave: true, saveUninitialized: true }));
 
+// If on themes, redirect to themeswitcher
+app.use(function(req, res, next) {
+  if(req.hostname == "themes.csh.rit.edu")
+    res.redirect("https://themeswitcher.csh.rit.edu" + req.path);
+  else next();
+});
+
 // Initialize Passport and restore authentication state, if any, from the session.
 app.use(passport.initialize());
 app.use(passport.session());
@@ -62,7 +69,7 @@ app.get('/login/callback',
         function(req, res) {
   res.redirect(req.session.returnTo);
 });
-
+  
 // Require auth for everything after the auth pages.
 app.use( require('connect-ensure-login').ensureLoggedIn());
 
