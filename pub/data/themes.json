@@ -6,5 +6,9 @@
   {
     "name": "Pride",
     "cdn": "csh-pride-bootstrap"
+  },
+  {
+    "name": "Datto",
+    "cdn": "csh-datto-bootstrap"
   }
 ]
