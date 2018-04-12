@@ -1,14 +1,17 @@
 [
   {
     "name": "Material",
-    "cdn": "csh-material-bootstrap"
+    "cdn": "csh-material-bootstrap",
+    "colour": "b0197e"
   },
   {
     "name": "Pride",
-    "cdn": "csh-pride-bootstrap"
+    "cdn": "csh-pride-bootstrap",
+    "colour": "282c34"
   },
   {
     "name": "Datto",
-    "cdn": "csh-datto-bootstrap"
+    "cdn": "csh-datto-bootstrap",
+    "colour": "5ebbe4"
   }
 ]

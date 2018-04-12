@@ -39,8 +39,8 @@ app.controller("ThemeSwitcherController", ['$scope', '$http', function($scope, $
   });
 
   // Sets the theme selection via the api and hotswaps the page css
-  $scope.cssFunc = function (link) {
-    $http.get("/api/set/" + link);
+  $scope.cssFunc = function (link, colour) {
+    $http.get("/api/set/" + link + "/" + colour);
     $scope.cdn = "https://s3.csh.rit.edu/" + link + "/4.0.0/dist/" + link + ".min.css";
   };
 
