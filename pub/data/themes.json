@@ -1,17 +1,20 @@
 [
   {
     "name": "Material",
-    "cdn": "csh-material-bootstrap",
+    "shortName": "csh-material-bootstrap",
+    "cdn": "https://s3.csh.rit.edu/csh-material-bootstrap/4.0.0/dist/csh-material-bootstrap.min.css",
     "colour": "b0197e"
   },
   {
     "name": "Pride",
-    "cdn": "csh-pride-bootstrap",
+    "shortName": "csh-pride-bootstrap",
+    "cdn": "https://s3.csh.rit.edu/csh-pride-bootstrap/4.0.0/dist/csh-pride-bootstrap.min.css",
     "colour": "282c34"
   },
   {
     "name": "Datto",
-    "cdn": "csh-datto-bootstrap",
+    "shortName": "csh-datto-bootstrap",
+    "cdn": "https://s3.csh.rit.edu/csh-datto-bootstrap/4.0.0/dist/csh-datto-bootstrap.min.css",
     "colour": "5ebbe4"
   }
 ]

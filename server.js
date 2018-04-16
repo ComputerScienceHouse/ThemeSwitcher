@@ -10,7 +10,6 @@ db.once('open', function() {
   var memberSchema = mongoose.Schema({
     uid: String,
     css: String,
-    colour: String
   });
 
   Member= mongoose.model('Member', memberSchema);
@@ -77,30 +76,45 @@ app.use( require('connect-ensure-login').ensureLoggedIn());
 // Serve the frontend
 app.use(express.static('pub'));
 
+// Gets the list of themes
+var themes = require("./pub/data/themes.json");
+
+// Returnes the theme object with the given shortName
+function getTheme(shortName) {
+  for(var theme in themes) {
+    if(themes[theme].shortName == shortName)
+      return themes[theme];
+  }
+  return themes[0];
+}
+
 // Retrieves the users DB record
 app.get('/api/get',
         function(req, res) {
   Member.findOne({ 'uid': req.user._json.preferred_username }, function(err, member) {
-    if(member != null)
-      res.redirect("https://s3.csh.rit.edu/" + member.css + "/4.0.0/dist/" + member.css + ".min.css");
-    else res.redirect("https://s3.csh.rit.edu/" + process.env.DEFAULT_CSS + "/4.0.0/dist/" + process.env.DEFAULT_CSS + ".min.css");
+    var theme;
+    if(member != null) {
+      theme = getTheme(member.css);
+    } else {
+      theme = getTheme(process.env.DEFAULT_CSS);
+    }
+    res.redirect(theme.cdn);
   });
 });
 
 // Writes css to the user's DB record
-app.get('/api/set/:css/:colour',
+app.get('/api/set/:css',
         function(req, res) {
   Member.findOne({ 'uid': req.user._json.preferred_username}, function(err, member) {
     if(member == null) {
       var u = new Member
-      ({ 'uid': req.user._json.preferred_username, css: req.params.css, colour: req.params.colour });
+      ({ 'uid': req.user._json.preferred_username, css: req.params.css });
       u.save(function(err, u) {
         if(err) res.status(404).send("Failed to save to database."); // Failure
         else res.status(204).send(""); // Created
       });
     } else {
       member.css = req.params.css;
-      member.colour = req.params.colour;
       member.save(function(err, user) {
         if(err) res.status(404).send("Failed to save to database."); // Failure
         else res.status(204).send(""); // Success, no response
@@ -112,8 +126,8 @@ app.get('/api/set/:css/:colour',
 app.get('/api/colour',
        function(req, res) {
   Member.findOne({ 'uid': req.user._json.preferred_username }, function(err, member) {
-    if(member != null && member.colour !=null)
-      res.status(200).send("#" + member.colour);
+    if(member != null)
+      res.status(200).send("#" + getTheme(member.css).colour);
     else res.status(200).send("#b0197e");
     // This is material primary. Hardcoding for now.
   });
