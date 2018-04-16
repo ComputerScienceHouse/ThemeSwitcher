@@ -10,7 +10,6 @@ db.once('open', function() {
   var memberSchema = mongoose.Schema({
     uid: String,
     css: String,
-    colour: String
   });
 
   Member= mongoose.model('Member', memberSchema);
@@ -70,20 +69,36 @@ app.get('/login/callback',
         function(req, res) {
   res.redirect(req.session.returnTo);
 });
-  
+
 // Require auth for everything after the auth pages.
 app.use( require('connect-ensure-login').ensureLoggedIn());
 
 // Serve the frontend
 app.use(express.static('pub'));
 
+// Gets the list of themes
+var themes = require("./pub/data/themes.json");
+
+// Returnes the theme object with the given shortName
+function getTheme(shortName) {
+  for(var theme in themes) {
+    if(themes[theme].shortName == shortName)
+      return themes[theme];
+  }
+  return themes[0];
+}
+
 // Retrieves the users DB record
 app.get('/api/get',
         function(req, res) {
   Member.findOne({ 'uid': req.user._json.preferred_username }, function(err, member) {
-    if(member != null)
-      res.redirect("https://s3.csh.rit.edu/" + member.css + "/4.0.0/dist/" + member.css + ".min.css");
-    else res.redirect("https://s3.csh.rit.edu/" + process.env.DEFAULT_CSS + "/4.0.0/dist/" + process.env.DEFAULT_CSS + ".min.css");
+    var theme;
+    if(member != null) {
+      theme = getTheme(member.css);
+    } else {
+      theme = getTheme(process.env.DEFAULT_CSS);
+    }
+    res.redirect(theme.cdn);
   });
 });
 
@@ -110,31 +125,27 @@ app.get('/api/set/:css/:colour',
 });
 
 app.get('/api/colour',
-       function(req, res) {
+        function(req, res) {
   Member.findOne({ 'uid': req.user._json.preferred_username }, function(err, member) {
-    if(member != null && member.colour !=null)
-      res.status(200).send("#" + member.colour);
+    if(member != null)
+      res.status(200).send("#" + getTheme(member.css).colour);
     else res.status(200).send("#b0197e");
     // This is material primary. Hardcoding for now.
   });
 });
 
-// Returns the user for displaying the profile image and name.
-app.get('/who',
+// Returns data for configuring the static page
+var git = require('git-rev');
+var rev = "GitHub";
+git.short(function(commit) {
+  rev = commit;
+});
+
+app.get('/local',
         function(req, res) {
   var uid = req.user._json.preferred_username;
   var name = req.user._json.given_name + " " + req.user._json.family_name;
-  res.status(202).send({"uid": uid, "name": name});
-});
-
-var git = require('git-rev');
-
-// Returns the current git revision
-app.get('/rev',
-        function(req, res) {
-  git.short(function(commit) {
-    res.status(200).send(commit);
-  });
+  res.status(200).send({ "uid": uid, "name": name, "rev": rev });
 });
 
 app.listen(parseInt(process.env.PORT));

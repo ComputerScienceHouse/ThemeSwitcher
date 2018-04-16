@@ -23,13 +23,14 @@ app.controller("ThemeSwitcherController", ['$scope', '$http', function($scope, $
   var uid = "test";
   var imgStr = "https://profiles.csh.rit.edu/image/";
   $scope.cdn = "/api/get";
-  $http.get("/who").success(function (response) {
-    uid = response.uid;
+  $http.get("/local").success(function (response) {
     $scope.profile = imgStr.concat(response.uid);
     $scope.name = response.name;
+    $scope.gitRev = response.rev;
   }).error(function (error) { 
     $scope.profile = imgStr.concat("test");
     $scope.name = "Test";
+    $scope.gitRev = "GitHub";
   });
 
   // Enumerates the themes dropdown
@@ -39,16 +40,15 @@ app.controller("ThemeSwitcherController", ['$scope', '$http', function($scope, $
   });
 
   // Sets the theme selection via the api and hotswaps the page css
-  $scope.cssFunc = function (link, colour) {
-    $http.get("/api/set/" + link + "/" + colour);
-    $scope.cdn = "https://s3.csh.rit.edu/" + link + "/4.0.0/dist/" + link + ".min.css";
+  $scope.cssFunc = function (link) {
+    $http.get("/api/set/" + link);
+    var cdn = "";
+    for(var theme in $scope.themes) {
+      if($scope.themes[theme].shortName == link)
+        cdn = $scope.themes[theme].cdn;
+    }
+    if(cdn == "") cdn = $scope.themes[0].cdn;
+    $scope.cdn = cdn;
   };
-
-  // Get the current git revision to append to the bottom of the page
-  $http.get("/rev").success(function(response) {
-    $scope.gitRev = response;
-  }).error(function (error) {
-    $scope.gitRev = "GitHub";
-  });
 
 }]);
