@@ -103,18 +103,19 @@ app.get('/api/get',
 });
 
 // Writes css to the user's DB record
-app.get('/api/set/:css',
+app.get('/api/set/:css/:colour',
         function(req, res) {
   Member.findOne({ 'uid': req.user._json.preferred_username}, function(err, member) {
     if(member == null) {
       var u = new Member
-      ({ 'uid': req.user._json.preferred_username, css: req.params.css });
+      ({ 'uid': req.user._json.preferred_username, css: req.params.css, colour: req.params.colour });
       u.save(function(err, u) {
         if(err) res.status(404).send("Failed to save to database."); // Failure
         else res.status(204).send(""); // Created
       });
     } else {
       member.css = req.params.css;
+      member.colour = req.params.colour;
       member.save(function(err, user) {
         if(err) res.status(404).send("Failed to save to database."); // Failure
         else res.status(204).send(""); // Success, no response
