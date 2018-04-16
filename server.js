@@ -69,7 +69,7 @@ app.get('/login/callback',
         function(req, res) {
   res.redirect(req.session.returnTo);
 });
-  
+
 // Require auth for everything after the auth pages.
 app.use( require('connect-ensure-login').ensureLoggedIn());
 
@@ -124,7 +124,7 @@ app.get('/api/set/:css',
 });
 
 app.get('/api/colour',
-       function(req, res) {
+        function(req, res) {
   Member.findOne({ 'uid': req.user._json.preferred_username }, function(err, member) {
     if(member != null)
       res.status(200).send("#" + getTheme(member.css).colour);
@@ -133,22 +133,18 @@ app.get('/api/colour',
   });
 });
 
-// Returns the user for displaying the profile image and name.
-app.get('/who',
+// Returns data for configuring the static page
+var git = require('git-rev');
+var rev = "GitHub";
+git.short(function(commit) {
+  rev = commit;
+});
+
+app.get('/local',
         function(req, res) {
   var uid = req.user._json.preferred_username;
   var name = req.user._json.given_name + " " + req.user._json.family_name;
-  res.status(202).send({"uid": uid, "name": name});
-});
-
-var git = require('git-rev');
-
-// Returns the current git revision
-app.get('/rev',
-        function(req, res) {
-  git.short(function(commit) {
-    res.status(200).send(commit);
-  });
+  res.status(200).send({ "uid": uid, "name": name, "rev": rev });
 });
 
 app.listen(parseInt(process.env.PORT));
