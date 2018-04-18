@@ -17,9 +17,23 @@ Implement as:
 
 ## Contributing
 ### Pull Requests
-To contribute to themeswitcher, please fork this repository and submit a pull request. If it is a significant change (more than a couple lines) please create a new branch.
+To contribute to themeswitcher, please fork this repository and submit a pull request. If it is a significant change (more than a couple lines) please create a new branch. Excluding ReadMe changes, pull requests to site will not be accepted.
 ### Issues
 As themeswitcher is hosted on GitHub, it uses GitHub's issue tracker to document issues. Please open any issues there.
 ### Adding Themes
-If you want to add a theme, edit /data/themes.json.
-The name field will be displayed in the dropdown, and the cdn field is the name of the theme on s3. At present, themeswitcher only accepts themes that are hosted on s3.csh and that use bootstrap v4.0.0
+Themes are stored in `/pub/data/themes.json` in the style of
+```json
+  {
+    "name": "Material",
+    "shortName": "csh-material-bootstrap",
+    "cdn": "https://s3.csh.rit.edu/csh-material-bootstrap/4.0.0/dist/csh-material-bootstrap.min.css",
+    "colour": "b0197e"
+  },
+```
+If you'd like to add a theme, add it to `themes.json` in the same pattern, detailed below.
+* `name`: The string to display in the selector. This is how your theme is identified to users.
+* `shortName`: A string to identify your theme to the api. Cannot include spaces.
+* `cdn`: The url to the minified stylesheet.
+* `colour`: The primary colour of the theme.
+
+All themes should be bootstrap 4.0.0.
