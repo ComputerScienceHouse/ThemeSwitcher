@@ -79,7 +79,7 @@ app.get('/api/get', function(req, res, next) {
 // If no user is logged in, returns the default colour.
 app.get('/api/colour', function(req, res, next){
   if(req.user) next(); // Passes control to standard colour
-  else res.status(200).send(getTheme(process.env.DEFAULT_CSS).colour);
+  else res.status(200).send('#' + getTheme(process.env.DEFAULT_CSS).colour);
 });
 
 // Require auth for everything after the auth pages.
