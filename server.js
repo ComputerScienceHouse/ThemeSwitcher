@@ -70,8 +70,20 @@ app.get('/login/callback',
   res.redirect(req.session.returnTo);
 });
 
+// If no user is logged in, redirects to the default theme.
+app.get('/api/get', function(req, res, next) {
+  if(req.user) next(); // Passes to standard get
+  else res.redirect(getTheme(process.env.DEFAULT_CSS).cdn);
+});
+
+// If no user is logged in, returns the default colour.
+app.get('/api/colour', function(req, res, next){
+  if(req.user) next(); // Passes control to standard colour
+  else res.status(200).send('#' + getTheme(process.env.DEFAULT_CSS).colour);
+});
+
 // Require auth for everything after the auth pages.
-app.use( require('connect-ensure-login').ensureLoggedIn());
+app.use(require('connect-ensure-login').ensureLoggedIn());
 
 // Serve the frontend
 app.use(express.static('pub'));
