@@ -21,6 +21,6 @@
     "name": "Pastel",
     "shortName": "csh-pastel-bootstrap",
     "cdn": "https://s3.csh.rit.edu/csh-datto-bootstrap/4.0.0/dist/csh-datto-bootstrap.min.css",
-    "colour": "F6CECE"
+    "colour": "f6cece"
   }
 ]
