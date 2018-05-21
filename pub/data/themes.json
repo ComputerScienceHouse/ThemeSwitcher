@@ -20,7 +20,7 @@
   {
     "name": "Pastel",
     "shortName": "csh-pastel-bootstrap",
-    "cdn": "https://s3.csh.rit.edu/csh-pastel-bootstrap/4.0.0/dist/csh-datto-bootstrap.min.css",
+    "cdn": "https://s3.csh.rit.edu/csh-pastel-bootstrap/4.0.0/dist/csh-pastel-bootstrap.min.css",
     "colour": "f6cece"
   }
 ]
