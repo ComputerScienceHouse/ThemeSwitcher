@@ -36,4 +36,4 @@ If you'd like to add a theme, add it to `themes.json` in the same pattern, detai
 * `cdn`: The url to the minified stylesheet.
 * `colour`: The primary colour of the theme.
 
-All themes should be bootstrap 4.0.0.
+All themes should be bootstrap ~>4.1.2
