@@ -9,6 +9,7 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
   var memberSchema = mongoose.Schema({
     uid: String,
+    uuid: String,
     css: String,
   });
 
@@ -103,7 +104,16 @@ function getTheme(shortName) {
 // Retrieves the users DB record
 app.get('/api/get',
         function(req, res) {
-  Member.findOne({ 'uid': req.user._json.preferred_username }, function(err, member) {
+  Member.findOne({ 'uuid': req.user._json.sub }, function(err, member) {
+    if(member == null) {
+      Member.findOne({ 'uid': req.user._json.preferred_username }, function(err, member_by_uid) {
+        member = member;
+        if(member != null) {
+          member.uuid = req.user._json.sub;
+          member.save();
+        }
+      });
+    }
     var theme;
     if(member != null) {
       theme = getTheme(member.css);
@@ -117,10 +127,23 @@ app.get('/api/get',
 // Writes css to the user's DB record
 app.get('/api/set/:css',
         function(req, res) {
-  Member.findOne({ 'uid': req.user._json.preferred_username}, function(err, member) {
+  Member.findOne({ 'uuid': req.user._json.sub }, function(err, member) {
+    if(member == null) {
+      Member.findOne({ 'uid': req.user._json.preferred_username }, function(err, member_by_uid) {
+        member = member;
+        if(member != null) {
+          member.uuid = req.user._json.sub;
+          member.save();
+        }
+      });
+    }
     if(member == null) {
       var u = new Member
-      ({ 'uid': req.user._json.preferred_username, css: req.params.css });
+      ({
+         'uid': req.user._json.preferred_username,
+         'uuid': req.user._json.sub,
+         'css': req.params.css
+      });
       u.save(function(err, u) {
         if(err) res.status(404).send("Failed to save to database."); // Failure
         else res.status(204).send(""); // Created
@@ -137,7 +160,16 @@ app.get('/api/set/:css',
 
 app.get('/api/colour',
         function(req, res) {
-  Member.findOne({ 'uid': req.user._json.preferred_username }, function(err, member) {
+  Member.findOne({ 'uuid': req.user._json.sub }, function(err, member) {
+    if(member == null) {
+      Member.findOne({ 'uid': req.user._json.preferred_username }, function(err, member_by_uid) {
+        member = member;
+        if(member != null) {
+          member.uuid = req.user._json.sub;
+          member.save();
+        }
+      });
+    }
     if(member != null)
       res.status(200).send("#" + getTheme(member.css).colour);
     else res.status(200).send("#b0197e");
