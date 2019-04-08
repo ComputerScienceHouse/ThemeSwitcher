@@ -8,8 +8,8 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
   var memberSchema = mongoose.Schema({
+    _id: String,
     uid: String,
-    uuid: String,
     css: String,
   });
 
@@ -83,7 +83,7 @@ app.get('/api/colour', function(req, res, next){
   else res.status(200).send('#' + getTheme(process.env.DEFAULT_CSS).colour);
 });
 
-// Require auth for everything after the auth pages.
+// Require auth for everything after default routes.
 app.use(require('connect-ensure-login').ensureLoggedIn());
 
 // Serve the frontend
@@ -104,12 +104,12 @@ function getTheme(shortName) {
 // Retrieves the users DB record
 app.get('/api/get',
         function(req, res) {
-  Member.findOne({ 'uuid': req.user._json.sub }, function(err, member) {
+  Member.findOne({ '_id': req.user._json.sub }, function(err, member) {
     if(member == null) {
       Member.findOne({ 'uid': req.user._json.preferred_username }, function(err, member_by_uid) {
         member = member;
         if(member != null) {
-          member.uuid = req.user._json.sub;
+          member._id = req.user._json.sub;
           member.save();
         }
       });
@@ -127,12 +127,12 @@ app.get('/api/get',
 // Writes css to the user's DB record
 app.get('/api/set/:css',
         function(req, res) {
-  Member.findOne({ 'uuid': req.user._json.sub }, function(err, member) {
+  Member.findOne({ '_id': req.user._json.sub }, function(err, member) {
     if(member == null) {
       Member.findOne({ 'uid': req.user._json.preferred_username }, function(err, member_by_uid) {
         member = member;
         if(member != null) {
-          member.uuid = req.user._json.sub;
+          member._id = req.user._json.sub;
           member.save();
         }
       });
@@ -140,8 +140,8 @@ app.get('/api/set/:css',
     if(member == null) {
       var u = new Member
       ({
+         '_id': req.user._json.sub,
          'uid': req.user._json.preferred_username,
-         'uuid': req.user._json.sub,
          'css': req.params.css
       });
       u.save(function(err, u) {
@@ -160,20 +160,19 @@ app.get('/api/set/:css',
 
 app.get('/api/colour',
         function(req, res) {
-  Member.findOne({ 'uuid': req.user._json.sub }, function(err, member) {
+  Member.findOne({ '_id': req.user._json.sub }, function(err, member) {
     if(member == null) {
       Member.findOne({ 'uid': req.user._json.preferred_username }, function(err, member_by_uid) {
         member = member;
         if(member != null) {
-          member.uuid = req.user._json.sub;
+          member._id = req.user._json.sub;
           member.save();
         }
       });
     }
     if(member != null)
       res.status(200).send("#" + getTheme(member.css).colour);
-    else res.status(200).send("#b0197e");
-    // This is material primary. Hardcoding for now.
+    else res.status(200).send("#" + getTheme(process.env.DEFAULT_CSS).colour);
   });
 });
 
