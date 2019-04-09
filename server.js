@@ -105,15 +105,6 @@ function getTheme(shortName) {
 app.get('/api/get',
         function(req, res) {
   Member.findOne({ '_id': req.user._json.sub }, function(err, member) {
-    if(member == null) {
-      Member.findOne({ 'uid': req.user._json.preferred_username }, function(err, member_by_uid) {
-        member = member;
-        if(member != null) {
-          member._id = req.user._json.sub;
-          member.save();
-        }
-      });
-    }
     var theme;
     if(member != null) {
       theme = getTheme(member.css);
@@ -128,15 +119,6 @@ app.get('/api/get',
 app.get('/api/set/:css',
         function(req, res) {
   Member.findOne({ '_id': req.user._json.sub }, function(err, member) {
-    if(member == null) {
-      Member.findOne({ 'uid': req.user._json.preferred_username }, function(err, member_by_uid) {
-        member = member;
-        if(member != null) {
-          member._id = req.user._json.sub;
-          member.save();
-        }
-      });
-    }
     if(member == null) {
       var u = new Member
       ({
@@ -161,15 +143,6 @@ app.get('/api/set/:css',
 app.get('/api/colour',
         function(req, res) {
   Member.findOne({ '_id': req.user._json.sub }, function(err, member) {
-    if(member == null) {
-      Member.findOne({ 'uid': req.user._json.preferred_username }, function(err, member_by_uid) {
-        member = member;
-        if(member != null) {
-          member._id = req.user._json.sub;
-          member.save();
-        }
-      });
-    }
     if(member != null)
       res.status(200).send("#" + getTheme(member.css).colour);
     else res.status(200).send("#" + getTheme(process.env.DEFAULT_CSS).colour);
