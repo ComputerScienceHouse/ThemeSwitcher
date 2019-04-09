@@ -6,12 +6,13 @@
     ],
     "name": "cshthemeswitcher",
     "devDependencies": {
-        "npm": "^5.8.0"
+        "npm": "^6.9.0"
     },
     "dependencies": {
         "angular": "^1.6.9",
         "bootstrap": "~>4.3.1",
         "connect-ensure-login": "^0.1.1",
+        "cookie-parser": "^1.4.4",
         "dotenv": "^5.0.1",
         "express": ">=4.5.0",
         "express-session": "^1.15.6",

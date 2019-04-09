@@ -8,8 +8,8 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
   var memberSchema = mongoose.Schema({
+    _id: String,
     uid: String,
-    uuid: String,
     css: String,
   });
 
@@ -47,6 +47,15 @@ passport.deserializeUser(function(obj, cb) {
 var express = require('express');
 var app = express();
 
+var cookieParser = require('cookie-parser');
+app.use(cookieParser());
+var cookieName = 'csh-theme'
+var cookieOpts = {
+  signed: false,
+  expires: new Date(Date.now() + 31557600),
+  domain: '.csh.rit.edu'
+}
+
 // Configure session handling
 app.use(require('express-session')({ secret: process.env.EXPRESS_SESSION_SECRET, resave: true, saveUninitialized: true }));
 
@@ -73,17 +82,29 @@ app.get('/login/callback',
 
 // If no user is logged in, redirects to the default theme.
 app.get('/api/get', function(req, res, next) {
-  if(req.user) next(); // Passes to standard get
-  else res.redirect(getTheme(process.env.DEFAULT_CSS).cdn);
+  if(req.user)
+    next(); // Passes to standard get
+  else if(req.cookies[cookieName]) {
+    var theme = req.cookies[cookieName];
+    res.cookie(cookieName, theme, cookieOpts); // Refresh expiration
+    res.redirect('#' + getTheme(theme).cdn);
+  } else
+    res.redirect(getTheme(process.env.DEFAULT_CSS).cdn);
 });
 
 // If no user is logged in, returns the default colour.
 app.get('/api/colour', function(req, res, next){
-  if(req.user) next(); // Passes control to standard colour
-  else res.status(200).send('#' + getTheme(process.env.DEFAULT_CSS).colour);
+  if(req.user)
+    next(); // Passes control to standard colour
+  else if(req.cookies[cookieName]) {
+    var theme = req.cookies[cookieName];
+    res.cookie(cookieName, theme, cookieOpts); // Refresh expiration
+    res.redirect('#' + getTheme(theme).colour);
+  } else
+    res.status(200).send('#' + getTheme(process.env.DEFAULT_CSS).colour);
 });
 
-// Require auth for everything after the auth pages.
+// Require auth for everything after default routes.
 app.use(require('connect-ensure-login').ensureLoggedIn());
 
 // Serve the frontend
@@ -104,22 +125,14 @@ function getTheme(shortName) {
 // Retrieves the users DB record
 app.get('/api/get',
         function(req, res) {
-  Member.findOne({ 'uuid': req.user._json.sub }, function(err, member) {
-    if(member == null) {
-      Member.findOne({ 'uid': req.user._json.preferred_username }, function(err, member_by_uid) {
-        member = member;
-        if(member != null) {
-          member.uuid = req.user._json.sub;
-          member.save();
-        }
-      });
-    }
+  Member.findOne({ '_id': req.user._json.sub }, function(err, member) {
     var theme;
     if(member != null) {
       theme = getTheme(member.css);
     } else {
       theme = getTheme(process.env.DEFAULT_CSS);
     }
+    res.cookie(cookieName, theme.shortName, cookieOpts);
     res.redirect(theme.cdn);
   });
 });
@@ -127,21 +140,13 @@ app.get('/api/get',
 // Writes css to the user's DB record
 app.get('/api/set/:css',
         function(req, res) {
-  Member.findOne({ 'uuid': req.user._json.sub }, function(err, member) {
-    if(member == null) {
-      Member.findOne({ 'uid': req.user._json.preferred_username }, function(err, member_by_uid) {
-        member = member;
-        if(member != null) {
-          member.uuid = req.user._json.sub;
-          member.save();
-        }
-      });
-    }
+  res.cookie(cookieName, req.params.css, cookieOpts);
+  Member.findOne({ '_id': req.user._json.sub }, function(err, member) {
     if(member == null) {
       var u = new Member
       ({
+         '_id': req.user._json.sub,
          'uid': req.user._json.preferred_username,
-         'uuid': req.user._json.sub,
          'css': req.params.css
       });
       u.save(function(err, u) {
@@ -160,20 +165,10 @@ app.get('/api/set/:css',
 
 app.get('/api/colour',
         function(req, res) {
-  Member.findOne({ 'uuid': req.user._json.sub }, function(err, member) {
-    if(member == null) {
-      Member.findOne({ 'uid': req.user._json.preferred_username }, function(err, member_by_uid) {
-        member = member;
-        if(member != null) {
-          member.uuid = req.user._json.sub;
-          member.save();
-        }
-      });
-    }
+  Member.findOne({ '_id': req.user._json.sub }, function(err, member) {
     if(member != null)
       res.status(200).send("#" + getTheme(member.css).colour);
-    else res.status(200).send("#b0197e");
-    // This is material primary. Hardcoding for now.
+    else res.status(200).send("#" + getTheme(process.env.DEFAULT_CSS).colour);
   });
 });
 
