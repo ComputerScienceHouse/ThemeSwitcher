@@ -2,12 +2,12 @@
 require('dotenv').config();
 
 // Define and connect to database
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 mongoose.connect(process.env.DB_URI);
-var db = mongoose.connection;
+const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
-  var memberSchema = mongoose.Schema({
+  const memberSchema = new mongoose.Schema({
     _id: String,
     uid: String,
     css: String,
@@ -17,8 +17,8 @@ db.once('open', function() {
 });
 
 // Configure the OpenID Connect strategy for use by Passport.
-var passport = require('passport');
-var Strategy = require('passport-openidconnect').Strategy;
+const passport = require('passport');
+const Strategy = require('passport-openidconnect').Strategy;
 passport.use(new Strategy({
   issuer: 'https://sso.csh.rit.edu/auth/realms/csh',
   authorizationURL: 'https://sso.csh.rit.edu/auth/realms/csh/protocol/openid-connect/auth',
@@ -26,9 +26,9 @@ passport.use(new Strategy({
   userInfoURL: 'https://sso.csh.rit.edu/auth/realms/csh/protocol/openid-connect/userinfo',
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: process.env.HOST + '/login/callback'
+  callbackURL: process.env.HOST + '/login/callback',
 },
-                          function(accessToken, refreshToken, profile, cb) {
+function(accessToken, refreshToken, profile, cb) {
   return cb(null, profile);
 }));
 
@@ -44,67 +44,74 @@ passport.deserializeUser(function(obj, cb) {
 
 
 // Create a new Express application.
-var express = require('express');
-var app = express();
+const express = require('express');
+const app = express();
 
-var compression = require('compression');
+const compression = require('compression');
 app.use(compression());
 
-var cookieParser = require('cookie-parser');
+const cookieParser = require('cookie-parser');
 app.use(cookieParser());
-var cookieName = 'csh-theme'
-var cookieOpts = {
+const cookieName = 'csh-theme';
+const cookieOpts = {
   signed: false,
   expires: new Date(Date.now() + 31557600),
-  domain: '.csh.rit.edu'
-}
+  domain: '.csh.rit.edu',
+};
 
 // Configure session handling
-app.use(require('express-session')({ secret: process.env.EXPRESS_SESSION_SECRET, resave: true, saveUninitialized: true }));
+app.use(require('express-session')({
+  secret: process.env.EXPRESS_SESSION_SECRET,
+  resave: true,
+  saveUninitialized: true,
+}));
 
 // If on themes, redirect to themeswitcher
 app.use(function(req, res, next) {
-  if(req.hostname == "themes.csh.rit.edu")
-    res.redirect("https://themeswitcher.csh.rit.edu" + req.path);
-  else next();
+  if (req.hostname == 'themes.csh.rit.edu') {
+    res.redirect('https://themeswitcher.csh.rit.edu' + req.path);
+  } else next();
 });
 
-// Initialize Passport and restore authentication state, if any, from the session.
+// Initialize Passport and restore authentication state,
+// if any, from the session.
 app.use(passport.initialize());
 app.use(passport.session());
 
 // Authentication: authenticates with CSH OIDC and returns to origin point
 app.get('/login',
-        passport.authenticate('openidconnect'));
+    passport.authenticate('openidconnect'));
 
 app.get('/login/callback',
-        passport.authenticate('openidconnect', { failureRedirect: '/login' }),
-        function(req, res) {
-  res.redirect(req.session.returnTo);
-});
+    passport.authenticate('openidconnect', {failureRedirect: '/login'}),
+    function(req, res) {
+      res.redirect(req.session.returnTo);
+    });
 
 // If no user is logged in, redirects to the default theme.
 app.get('/api/get', function(req, res, next) {
-  if(req.user)
-    next(); // Passes to standard get
-  else if(req.cookies[cookieName]) {
-    var theme = req.cookies[cookieName];
+  if (req.user) {
+    next();
+  } else if (req.cookies[cookieName]) {
+    const theme = req.cookies[cookieName];
     res.cookie(cookieName, theme, cookieOpts); // Refresh expiration
     res.redirect('#' + getTheme(theme).cdn);
-  } else
+  } else {
     res.redirect(getTheme(process.env.DEFAULT_CSS).cdn);
+  }
 });
 
 // If no user is logged in, returns the default colour.
-app.get('/api/colour', function(req, res, next){
-  if(req.user)
+app.get('/api/colour', function(req, res, next) {
+  if (req.user) {
     next(); // Passes control to standard colour
-  else if(req.cookies[cookieName]) {
-    var theme = req.cookies[cookieName];
+  } else if (req.cookies[cookieName]) {
+    const theme = req.cookies[cookieName];
     res.cookie(cookieName, theme, cookieOpts); // Refresh expiration
     res.redirect('#' + getTheme(theme).colour);
-  } else
+  } else {
     res.status(200).send('#' + getTheme(process.env.DEFAULT_CSS).colour);
+  }
 });
 
 // Require auth for everything after default routes.
@@ -114,79 +121,96 @@ app.use(require('connect-ensure-login').ensureLoggedIn());
 app.use(express.static('pub'));
 
 // Gets the list of themes
-var themes = require("./pub/data/themes.json");
+const themes = require('./pub/data/themes.json');
 
-// Returnes the theme object with the given shortName
+/**
+ * Returnes the theme object with the given shortName
+ *
+ * @param {string} shortName - The name of the theme.
+ * @return {Object} The matching theme.
+ */
 function getTheme(shortName) {
-  for(var theme in themes) {
-    if(themes[theme].shortName == shortName)
+  for (const theme in themes) {
+    if (themes[theme].shortName == shortName) {
       return themes[theme];
+    }
   }
   return themes[0];
 }
 
 // Retrieves the users DB record
 app.get('/api/get',
-        function(req, res) {
-  Member.findOne({ '_id': req.user._json.sub }, function(err, member) {
-    var theme;
-    if(member != null) {
-      theme = getTheme(member.css);
-    } else {
-      theme = getTheme(process.env.DEFAULT_CSS);
-    }
-    res.cookie(cookieName, theme.shortName, cookieOpts);
-    res.redirect(theme.cdn);
-  });
-});
+    function(req, res) {
+      Member.findOne({'_id': req.user._json.sub}, function(err, member) {
+        let theme;
+        if (member != null) {
+          theme = getTheme(member.css);
+        } else {
+          theme = getTheme(process.env.DEFAULT_CSS);
+        }
+        res.cookie(cookieName, theme.shortName, cookieOpts);
+        res.redirect(theme.cdn);
+      });
+    });
 
 // Writes css to the user's DB record
 app.get('/api/set/:css',
-        function(req, res) {
-  res.cookie(cookieName, req.params.css, cookieOpts);
-  Member.findOne({ '_id': req.user._json.sub }, function(err, member) {
-    if(member == null) {
-      var u = new Member
-      ({
-         '_id': req.user._json.sub,
-         'uid': req.user._json.preferred_username,
-         'css': req.params.css
+    function(req, res) {
+      res.cookie(cookieName, req.params.css, cookieOpts);
+      Member.findOne({'_id': req.user._json.sub}, function(err, member) {
+        if (member == null) {
+          const u = new Member({
+            '_id': req.user._json.sub,
+            'uid': req.user._json.preferred_username,
+            'css': req.params.css,
+          });
+          u.save(function(err, u) {
+            if (err) res.status(404).send('Failed to save to database.');
+            else res.status(204).send('');
+          });
+        } else {
+          member.css = req.params.css;
+          member.save(function(err, user) {
+            if (err) res.status(404).send('Failed to save to database.');
+            else res.status(204).send('');
+          });
+        }
       });
-      u.save(function(err, u) {
-        if(err) res.status(404).send("Failed to save to database."); // Failure
-        else res.status(204).send(""); // Created
-      });
-    } else {
-      member.css = req.params.css;
-      member.save(function(err, user) {
-        if(err) res.status(404).send("Failed to save to database."); // Failure
-        else res.status(204).send(""); // Success, no response
-      });
-    }
-  });
-});
+    });
 
 app.get('/api/colour',
-        function(req, res) {
-  Member.findOne({ '_id': req.user._json.sub }, function(err, member) {
-    if(member != null)
-      res.status(200).send("#" + getTheme(member.css).colour);
-    else res.status(200).send("#" + getTheme(process.env.DEFAULT_CSS).colour);
-  });
-});
+    function(req, res) {
+      Member.findOne({'_id': req.user._json.sub}, function(err, member) {
+        if (member != null) {
+          res.status(200).send('#' + getTheme(member.css).colour);
+        } else {
+          res.status(200).send('#' + getTheme(process.env.DEFAULT_CSS).colour);
+        }
+      });
+    });
 
 // Returns data for configuring the static page
-var git = require('git-rev');
-var rev = "GitHub";
+const git = require('git-rev');
+let rev = 'GitHub';
 git.short(function(commit) {
   rev = commit;
 });
 
 app.get('/local',
-        function(req, res) {
-  var uid = req.user._json.preferred_username;
-  var name = req.user._json.given_name + " " + req.user._json.family_name;
-  res.status(200).send({ "uid": uid, "name": name, "rev": rev });
-});
+    function(req, res) {
+      const uid = req.user._json.preferred_username;
+      const name = req.user._json.given_name + ' ' + req.user._json.family_name;
+      res.status(200).send({'uid': uid, 'name': name, 'rev': rev});
+    });
 
 app.listen(parseInt(process.env.PORT));
+
+
+// TODO
+// Set the templating engine
+app.set('view engine', 'pug');
+app.set('views', './views');
+
+app.get('/', function(req, res) {
+  res.render('index', {gitUrl: gitUrl, gitRev: rev});
+});
