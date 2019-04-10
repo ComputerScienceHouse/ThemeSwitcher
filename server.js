@@ -47,6 +47,9 @@ passport.deserializeUser(function(obj, cb) {
 var express = require('express');
 var app = express();
 
+var compression = require('compression');
+app.use(compression());
+
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
 var cookieName = 'csh-theme'
