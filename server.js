@@ -87,7 +87,7 @@ app.get('/api/get', function(req, res, next) {
   else if(req.cookies[cookieName]) {
     var theme = req.cookies[cookieName];
     res.cookie(cookieName, theme, cookieOpts); // Refresh expiration
-    res.redirect('#' + getTheme(theme).cdn);
+    res.redirect(getTheme(theme).cdn);
   } else
     res.redirect(getTheme(process.env.DEFAULT_CSS).cdn);
 });
