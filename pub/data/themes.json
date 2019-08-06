@@ -2,25 +2,25 @@
   {
     "name": "Material",
     "shortName": "csh-material-bootstrap",
-    "cdn": "https://s3.csh.rit.edu/csh-material-bootstrap/4.0.0/dist/csh-material-bootstrap.min.css",
+    "cdn": "https://assets.csh.rit.edu/csh-material-bootstrap/4.0.0/dist/csh-material-bootstrap.min.css",
     "colour": "b0197e"
   },
   {
     "name": "Pride",
     "shortName": "csh-pride-bootstrap",
-    "cdn": "https://s3.csh.rit.edu/csh-pride-bootstrap/4.0.0/dist/csh-pride-bootstrap.min.css",
+    "cdn": "https://assets.csh.rit.edu/csh-pride-bootstrap/4.0.0/dist/csh-pride-bootstrap.min.css",
     "colour": "282c34"
   },
   {
     "name": "Datto",
     "shortName": "csh-datto-bootstrap",
-    "cdn": "https://s3.csh.rit.edu/csh-datto-bootstrap/4.0.0/dist/csh-datto-bootstrap.min.css",
+    "cdn": "https://assets.csh.rit.edu/csh-datto-bootstrap/4.0.0/dist/csh-datto-bootstrap.min.css",
     "colour": "5ebbe4"
   },
   {
     "name": "Pastel",
     "shortName": "csh-pastel-bootstrap",
-    "cdn": "https://s3.csh.rit.edu/csh-pastel-bootstrap/4.0.0/dist/csh-pastel-bootstrap.min.css",
+    "cdn": "https://assets.csh.rit.edu/csh-pastel-bootstrap/4.0.0/dist/csh-pastel-bootstrap.min.css",
     "colour": "f6cece"
   },
   {
