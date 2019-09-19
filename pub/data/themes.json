@@ -2,13 +2,13 @@
   {
     "name": "Material",
     "shortName": "csh-material-bootstrap",
-    "cdn": "https://assets.csh.rit.edu/csh-material-bootstrap/4.0.0/dist/csh-material-bootstrap.min.css",
+    "cdn": "https://assets.csh.rit.edu/csh-material-bootstrap/4.3.1/dist/csh-material-bootstrap.min.css",
     "colour": "b0197e"
   },
   {
     "name": "Pride",
     "shortName": "csh-pride-bootstrap",
-    "cdn": "https://assets.csh.rit.edu/csh-pride-bootstrap/4.0.0/dist/csh-pride-bootstrap.min.css",
+    "cdn": "https://assets.csh.rit.edu/csh-pride-bootstrap/4.3.1/dist/csh-pride-bootstrap.min.css",
     "colour": "282c34"
   },
   {
