@@ -26,13 +26,13 @@
   {
     "name": "Dark",
     "shortName": "csh-dark-material-bootstrap",
-    "cdn": "https://assets.csh.rit.edu/csh-dark-material-bootstrap/4.3.1/dist/csh-dark-material-bootstrap.min.css",
+    "cdn": "https://assets.csh.rit.edu/csh-dark-material-bootstrap/4.3.2/dist/csh-dark-material-bootstrap.min.css",
     "colour": "b0197e"
   },
   {
     "name": "Classic",
     "shortName": "csh-classic-material-bootstrap",
-    "cdn": "https://assets.csh.rit.edu/csh-classic-material-bootstrap/4.3.1/dist/csh-classic-material-bootstrap.min.css",
+    "cdn": "https://assets.csh.rit.edu/csh-classic-material-bootstrap/4.3.2/dist/csh-classic-material-bootstrap.min.css",
     "colour": "279901"
   },
   {
