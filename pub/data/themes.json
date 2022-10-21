@@ -40,5 +40,11 @@
     "shortName": "break",
     "cdn": "",
     "colour": ""
+  },
+    {
+    "name": "Spooktober",
+    "shortName": "csh-spooktober-bootstrap",
+    "cdn": "https://asimonson.com/things/csh-spooktober-bootstrap.min.css",
+    "colour": "18181a"
   }
 ]
