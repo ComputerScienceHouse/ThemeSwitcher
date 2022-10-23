@@ -36,6 +36,12 @@
     "colour": "279901"
   },
   {
+    "name": "Spooktober",
+    "shortName": "csh-spooktober-bootstrap",
+    "cdn": "https://assets.csh.rit.edu/spooktober-theme/4.5.2/dist/csh-spooktober-material-bootstrap.min.css",
+    "colour": "18181a"
+  },
+  {
     "name": "",
     "shortName": "break",
     "cdn": "",
