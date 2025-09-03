@@ -6,11 +6,11 @@
     ],
     "name": "cshthemeswitcher",
     "devDependencies": {
-        "npm": "^6.9.0"
+        "npm": "^11.6.0"
     },
     "dependencies": {
         "angular": "^1.6.9",
-        "bootstrap": "~>4.3.1",
+        "bootstrap": "^5.3.8",
         "connect-ensure-login": "^0.1.1",
         "cookie-parser": "^1.4.4",
         "dotenv": "^5.0.1",
@@ -18,8 +18,8 @@
         "express-session": "^1.15.6",
         "git-rev": "^0.2.1",
         "jquery": "^3.3.1",
-        "mongoose": "^5.0.12",
-        "passport": "^0.4.0",
-        "passport-openidconnect": "0.0.2"
+        "mongoose": "^8.18.0",
+        "passport": "^0.7.0",
+        "passport-openidconnect": "^0.1.2"
     }
 }
