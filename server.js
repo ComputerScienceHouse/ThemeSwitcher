@@ -29,20 +29,8 @@ passport.use(new Strategy({
   callbackURL: process.env.HOST + '/login/callback'
 },
   function(issuer, sub, profile, jwtClaims, accessToken, refreshToken, params, cb) {
-    console.log(sub)
     return cb(null, sub);
 }));
-
-
-// Configure Passport authenticated session persistence.
-// passport.serializeUser(function(user, cb) {
-//   console.log("serializing user with...",user._json)
-//   cb(null, user);
-// });
-
-// passport.deserializeUser(function(obj, cb) {
-//   cb(null, obj);
-// });
 
 passport.serializeUser(function(user, cb) {
   process.nextTick(function() {
@@ -160,7 +148,7 @@ app.get('/api/get',
 app.get('/api/set/:css',
         function(req, res) {
   res.cookie(cookieName, req.params.css, cookieOpts);
-  Member.findOne({ '_id': req.user.id }, function(err, member) {
+  Member.findOne({ '_id': req.user.id }).then((member)=>{
     if(member == null) {
       var u = new Member
       ({
@@ -184,7 +172,7 @@ app.get('/api/set/:css',
 
 app.get('/api/colour',
         function(req, res) {
-  Member.findOne({ '_id': req.user.id }, function(err, member) {
+  Member.findOne({ '_id': req.user.id }).then((member)=>{
     if(member != null)
       res.status(200).send("#" + getTheme(member.css).colour);
     else res.status(200).send("#" + getTheme(process.env.DEFAULT_CSS).colour);
@@ -199,11 +187,10 @@ git.short(function(commit) {
 });
 
 app.get('/local',
-        function(req, res) {
-  console.log("USER: "+JSON.stringify(req.user))
-  var uid = req.user.username;
-  var name = req.user.given_name + " " + req.user.family_name;
-  res.status(200).send({ "uid": uid, "name": name, "rev": rev });
+  function(req, res) {
+    var uid = req.user.username;
+    var name = req.user.given_name + " " + req.user.family_name;
+    res.status(200).send({ "uid": uid, "name": name, "rev": rev });
 });
 
 app.listen(parseInt(process.env.PORT));
