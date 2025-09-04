@@ -156,15 +156,15 @@ app.get('/api/set/:css',
          'uid': req.user.username,
          'css': req.params.css
       });
-      u.save(function(err, u) {
+      u.save().then().catch(err => {
         if(err) res.status(404).send("Failed to save to database."); // Failure
         else res.status(204).send(""); // Created
       });
     } else {
       member.css = req.params.css;
-      member.save(function(err, user) {
+      member.save().then().catch(err => {
         if(err) res.status(404).send("Failed to save to database."); // Failure
-        else res.status(204).send(""); // Success, no response
+        else res.status(204).send(""); // Created
       });
     }
   });
