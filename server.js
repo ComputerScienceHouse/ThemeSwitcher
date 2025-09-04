@@ -65,7 +65,6 @@ app.use(function(req, res, next) {
     res.redirect("https://themeswitcher.csh.rit.edu" + req.path);
   else next();
 });
-
 // Initialize Passport and restore authentication state, if any, from the session.
 app.use(passport.initialize());
 app.use(passport.session());
@@ -77,8 +76,9 @@ app.get('/login',
 app.get('/login/callback',
         passport.authenticate('openidconnect', { failureRedirect: '/login' }),
         function(req, res) {
-  res.redirect(req.session.returnTo);
-});
+          res.redirect(req.protocol+"://"+req.headers.host);
+        }
+      );
 
 // If no user is logged in, redirects to the default theme.
 app.get('/api/get', function(req, res, next) {
@@ -181,6 +181,7 @@ git.short(function(commit) {
 
 app.get('/local',
         function(req, res) {
+  console.log(req.user)
   var uid = req.user._json.preferred_username;
   var name = req.user._json.given_name + " " + req.user._json.family_name;
   res.status(200).send({ "uid": uid, "name": name, "rev": rev });
