@@ -28,20 +28,38 @@ passport.use(new Strategy({
   clientSecret: process.env.CLIENT_SECRET,
   callbackURL: process.env.HOST + '/login/callback'
 },
-                          function(accessToken, refreshToken, profile, cb) {
-  return cb(null, profile);
+  function(issuer, sub, profile, jwtClaims, accessToken, refreshToken, params, cb) {
+    console.log(sub)
+    return cb(null, sub);
 }));
 
 
 // Configure Passport authenticated session persistence.
+// passport.serializeUser(function(user, cb) {
+//   console.log("serializing user with...",user._json)
+//   cb(null, user);
+// });
+
+// passport.deserializeUser(function(obj, cb) {
+//   cb(null, obj);
+// });
+
 passport.serializeUser(function(user, cb) {
-  cb(null, user);
+  process.nextTick(function() {
+    return cb(null, {
+      id: user.id,
+      username: user.username,
+      family_name: user.name.familyName,
+      given_name: user.name.givenName
+    });
+  });
 });
 
-passport.deserializeUser(function(obj, cb) {
-  cb(null, obj);
+passport.deserializeUser(function(user, cb) {
+  process.nextTick(function() {
+    return cb(null, user);
+  });
 });
-
 
 // Create a new Express application.
 var express = require('express');
@@ -58,6 +76,7 @@ var cookieOpts = {
 
 // Configure session handling
 app.use(require('express-session')({ secret: process.env.EXPRESS_SESSION_SECRET, resave: true, saveUninitialized: true }));
+app.use(passport.authenticate('session'))
 
 // If on themes, redirect to themeswitcher
 app.use(function(req, res, next) {
@@ -76,7 +95,7 @@ app.get('/login',
 app.get('/login/callback',
         passport.authenticate('openidconnect', { failureRedirect: '/login' }),
         function(req, res) {
-          res.redirect(req.protocol+"://"+req.headers.host);
+          res.redirect(process.env.HOST);
         }
       );
 
@@ -124,29 +143,29 @@ function getTheme(shortName) {
 
 // Retrieves the users DB record
 app.get('/api/get',
-        function(req, res) {
-  Member.findOne({ '_id': req.user._json.sub }, function(err, member) {
-    var theme;
-    if(member != null) {
-      theme = getTheme(member.css);
-    } else {
-      theme = getTheme(process.env.DEFAULT_CSS);
-    }
-    res.cookie(cookieName, theme.shortName, cookieOpts);
-    res.redirect(theme.cdn);
-  });
+  function(req, res) {
+    Member.findOne({ '_id': req.user.id }).then((member)=>{
+      var theme;
+      if(member != null) {
+        theme = getTheme(member.css);
+      } else {
+        theme = getTheme(process.env.DEFAULT_CSS);
+      }
+      res.cookie(cookieName, theme.shortName, cookieOpts);
+      res.redirect(theme.cdn);
+    })
 });
 
 // Writes css to the user's DB record
 app.get('/api/set/:css',
         function(req, res) {
   res.cookie(cookieName, req.params.css, cookieOpts);
-  Member.findOne({ '_id': req.user._json.sub }, function(err, member) {
+  Member.findOne({ '_id': req.user.id }, function(err, member) {
     if(member == null) {
       var u = new Member
       ({
-         '_id': req.user._json.sub,
-         'uid': req.user._json.preferred_username,
+         '_id': req.user.id,
+         'uid': req.user.username,
          'css': req.params.css
       });
       u.save(function(err, u) {
@@ -165,7 +184,7 @@ app.get('/api/set/:css',
 
 app.get('/api/colour',
         function(req, res) {
-  Member.findOne({ '_id': req.user._json.sub }, function(err, member) {
+  Member.findOne({ '_id': req.user.id }, function(err, member) {
     if(member != null)
       res.status(200).send("#" + getTheme(member.css).colour);
     else res.status(200).send("#" + getTheme(process.env.DEFAULT_CSS).colour);
@@ -181,9 +200,9 @@ git.short(function(commit) {
 
 app.get('/local',
         function(req, res) {
-  console.log(req.user)
-  var uid = req.user._json.preferred_username;
-  var name = req.user._json.given_name + " " + req.user._json.family_name;
+  console.log("USER: "+JSON.stringify(req.user))
+  var uid = req.user.username;
+  var name = req.user.given_name + " " + req.user.family_name;
   res.status(200).send({ "uid": uid, "name": name, "rev": rev });
 });
 
