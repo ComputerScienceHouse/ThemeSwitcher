@@ -13,7 +13,7 @@ services:
       EXPRESS_SESSION_SECRET: "${EXPRESS_SESSION_SECRET}"
       PORT: "${PORT}"
     ports:
-      - "127.0.0.1:8081:8081"
+      - "8080:8080"
 
   mongodb:
     image: mongo:8.0-rc-noble
