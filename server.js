@@ -84,9 +84,9 @@ app.get('/login',
         passport.authenticate('openidconnect'));
 
 app.get('/login/callback',
-        passport.authenticate('openidconnect', { failureRedirect: '/login' }),
+        passport.authenticate('openidconnect', { failureRedirect: '/login', keepSessionInfo: true}),
         function(req, res) {
-          res.redirect(process.env.HOST);
+          res.redirect(req.session.returnTo);
         }
       );
 
