@@ -13,7 +13,7 @@ db.once('open', function() {
     css: String,
   });
 
-  Member= mongoose.model('Member', memberSchema);
+  Member = mongoose.model('Member', memberSchema);
 });
 
 // Configure the OpenID Connect strategy for use by Passport.
@@ -63,7 +63,10 @@ var cookieOpts = {
 }
 
 // Configure session handling
-app.use(require('express-session')({ secret: process.env.EXPRESS_SESSION_SECRET, resave: true, saveUninitialized: true }));
+const session = require('express-session')
+const MemoryStore = require('memorystore')(session)
+app.use(require('express-session')({ secret: process.env.EXPRESS_SESSION_SECRET, resave: true, saveUninitialized: true, store: new MemoryStore({
+  checkPeriod: 86400000}), cookie: { maxAge: 86400000 } }));
 app.use(passport.authenticate('session'))
 
 // If on themes, redirect to themeswitcher

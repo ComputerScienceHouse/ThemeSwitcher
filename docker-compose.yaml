@@ -1,0 +1,32 @@
+services:
+  themeswitcher:
+    build: .
+    container_name: themeswitcher
+    depends_on:
+      - mongodb
+    environment:
+      HOST: "${HOST}"
+      DB_URI: "${DB_URI}"
+      CLIENT_ID: "${CLIENT_ID}"
+      CLIENT_SECRET: "${CLIENT_SECRET}"
+      DEFAULT_CSS: "${DEFAULT_CSS}"
+      EXPRESS_SESSION_SECRET: "${EXPRESS_SESSION_SECRET}"
+      PORT: "${PORT}"
+    ports:
+      - "127.0.0.1:8081:8081"
+
+  mongodb:
+    image: mongo:8.0-rc-noble
+    container_name: mongodb-theme
+    command: "mongod --bind_ip 0.0.0.0"
+    environment:
+      - "MONGO_INITDB_DATABASE=theme"
+    ports:
+      - "27017:27017"
+    volumes:
+      - type: volume
+        source: mongodb
+        target: /data/db/
+
+volumes:
+  mongodb:
