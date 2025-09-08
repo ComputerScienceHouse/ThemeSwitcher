@@ -18,6 +18,20 @@ Implement as:
 ## Contributing
 ### Pull Requests
 To contribute to themeswitcher, please fork this repository and submit a pull request. If it is a significant change (more than a couple lines) please create a new branch. Excluding ReadMe changes, pull requests to site will not be accepted.
+
+### Environment Variables
+Create a `.env` file in the root directory using the following template. Contact an RTP to get the necessary secrets.
+```
+CLIENT_ID=themeswitcher
+CLIENT_SECRET=
+DEFAULT_CSS=csh-bootstrap-bootstrap
+EXPRESS_SESSION_SECRET=
+PORT=8080
+HOST=http://localhost:8080
+DB_URI=
+```
+For local development, the `DB_URI` should be `mongodb://mongodb-theme:27017/theme` to use the mongo image created in the docker compose. If you know what you're doing you can host and use your own DB, but why would you do that when there's one right here?
+
 ### Issues
 As themeswitcher is hosted on GitHub, it uses GitHub's issue tracker to document issues. Please open any issues there.
 ### Adding Themes
