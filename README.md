@@ -31,7 +31,20 @@ HOST=http://localhost:8080
 DB_URI=mongodb://themes:2cvtwcdye837nscp38@mongodb-theme:27017/themes?authSource=admin
 ```
 For local development, the `DB_URI` is already populated with the URI to use the mongo image created in the docker compose. If you know what you're doing you can host and use your own DB, but why would you do that when there's one right here?
-
+### Viewing Local Database
+If you're developing locally, viewing the database contents for debugging can be achieved using the following commands:
+1. Authenticate into the database
+```bash
+ docker exec -it mongodb-theme mongosh -u themes -p <yourpasswordhere> --authenticationDatabase admin
+```
+2. Select the `themes` table
+```bash
+ use themes
+```
+3. view the `members` collection and return JSON data
+```bash
+ db.members.find().pretty()
+```
 ### Issues
 As themeswitcher is hosted on GitHub, it uses GitHub's issue tracker to document issues. Please open any issues there.
 ### Adding Themes
