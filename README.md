@@ -39,7 +39,7 @@ If you're developing locally, viewing the database contents for debugging can be
 ```
 2. Select the `themes` table
 ```bash
- use themes
+use themes
 ```
 3. view the `members` collection and return JSON data
 ```bash
