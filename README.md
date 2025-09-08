@@ -28,9 +28,9 @@ DEFAULT_CSS=csh-bootstrap-bootstrap
 EXPRESS_SESSION_SECRET=
 PORT=8080
 HOST=http://localhost:8080
-DB_URI=
+DB_URI=mongodb://themes:2cvtwcdye837nscp38@mongodb-theme:27017/themes?authSource=admin
 ```
-For local development, the `DB_URI` should be `mongodb://mongodb-theme:27017/theme` to use the mongo image created in the docker compose. If you know what you're doing you can host and use your own DB, but why would you do that when there's one right here?
+For local development, the `DB_URI` is already populated with the URI to use the mongo image created in the docker compose. If you know what you're doing you can host and use your own DB, but why would you do that when there's one right here?
 
 ### Issues
 As themeswitcher is hosted on GitHub, it uses GitHub's issue tracker to document issues. Please open any issues there.
