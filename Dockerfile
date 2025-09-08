@@ -31,8 +31,12 @@ USER node
 # Copy the rest of the source files into the image.
 COPY . .
 
+# Load default port if not specified in build command
+ARG PORT=8080
+ENV PORT=${PORT}
+
 # Expose the port that the application listens on.
-EXPOSE 8080
+EXPOSE ${PORT}
 
 # Run the application.
 CMD node server.js
