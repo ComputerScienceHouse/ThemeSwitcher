@@ -13,7 +13,7 @@ db.once('open', function() {
     css: String,
   });
 
-  Member= mongoose.model('Member', memberSchema);
+  Member = mongoose.model('Member', memberSchema);
 });
 
 // Configure the OpenID Connect strategy for use by Passport.
@@ -28,20 +28,26 @@ passport.use(new Strategy({
   clientSecret: process.env.CLIENT_SECRET,
   callbackURL: process.env.HOST + '/login/callback'
 },
-                          function(accessToken, refreshToken, profile, cb) {
-  return cb(null, profile);
+  function(issuer, sub, profile, jwtClaims, accessToken, refreshToken, params, cb) {
+    return cb(null, sub);
 }));
 
-
-// Configure Passport authenticated session persistence.
 passport.serializeUser(function(user, cb) {
-  cb(null, user);
+  process.nextTick(function() {
+    return cb(null, {
+      id: user.id,
+      username: user.username,
+      family_name: user.name.familyName,
+      given_name: user.name.givenName
+    });
+  });
 });
 
-passport.deserializeUser(function(obj, cb) {
-  cb(null, obj);
+passport.deserializeUser(function(user, cb) {
+  process.nextTick(function() {
+    return cb(null, user);
+  });
 });
-
 
 // Create a new Express application.
 var express = require('express');
@@ -57,7 +63,12 @@ var cookieOpts = {
 }
 
 // Configure session handling
-app.use(require('express-session')({ secret: process.env.EXPRESS_SESSION_SECRET, resave: true, saveUninitialized: true }));
+const session = require('express-session')
+const MemoryStore = require('memorystore')(session)
+// Set cookie expiry to 24hrs to prevent memory leaks
+app.use(require('express-session')({ secret: process.env.EXPRESS_SESSION_SECRET, resave: true, saveUninitialized: true, store: new MemoryStore({
+  checkPeriod: 86400000}), cookie: { maxAge: 86400000 } }));
+app.use(passport.authenticate('session'))
 
 // If on themes, redirect to themeswitcher
 app.use(function(req, res, next) {
@@ -65,7 +76,6 @@ app.use(function(req, res, next) {
     res.redirect("https://themeswitcher.csh.rit.edu" + req.path);
   else next();
 });
-
 // Initialize Passport and restore authentication state, if any, from the session.
 app.use(passport.initialize());
 app.use(passport.session());
@@ -75,10 +85,15 @@ app.get('/login',
         passport.authenticate('openidconnect'));
 
 app.get('/login/callback',
-        passport.authenticate('openidconnect', { failureRedirect: '/login' }),
-        function(req, res) {
-  res.redirect(req.session.returnTo);
-});
+        passport.authenticate('openidconnect', { failureRedirect: '/login', keepSessionInfo: true}),
+        (req, res) => {
+          let returnURL = req.session.returnTo
+          req.session.regenerate((err) => {
+            if(err) return res.status(500).send("Auth session error"); // Failure
+          });
+          res.redirect(returnURL);
+        }
+      );
 
 // If no user is logged in, redirects to the default theme.
 app.get('/api/get', function(req, res, next) {
@@ -124,40 +139,40 @@ function getTheme(shortName) {
 
 // Retrieves the users DB record
 app.get('/api/get',
-        function(req, res) {
-  Member.findOne({ '_id': req.user._json.sub }, function(err, member) {
-    var theme;
-    if(member != null) {
-      theme = getTheme(member.css);
-    } else {
-      theme = getTheme(process.env.DEFAULT_CSS);
-    }
-    res.cookie(cookieName, theme.shortName, cookieOpts);
-    res.redirect(theme.cdn);
-  });
+  function(req, res) {
+    Member.findOne({ '_id': req.user.id }).then((member)=>{
+      var theme;
+      if(member != null) {
+        theme = getTheme(member.css);
+      } else {
+        theme = getTheme(process.env.DEFAULT_CSS);
+      }
+      res.cookie(cookieName, theme.shortName, cookieOpts);
+      res.redirect(theme.cdn);
+    })
 });
 
 // Writes css to the user's DB record
 app.get('/api/set/:css',
         function(req, res) {
   res.cookie(cookieName, req.params.css, cookieOpts);
-  Member.findOne({ '_id': req.user._json.sub }, function(err, member) {
+  Member.findOne({ '_id': req.user.id }).then((member)=>{
     if(member == null) {
       var u = new Member
       ({
-         '_id': req.user._json.sub,
-         'uid': req.user._json.preferred_username,
+         '_id': req.user.id,
+         'uid': req.user.username,
          'css': req.params.css
       });
-      u.save(function(err, u) {
+      u.save().then().catch(err => {
         if(err) res.status(404).send("Failed to save to database."); // Failure
         else res.status(204).send(""); // Created
       });
     } else {
       member.css = req.params.css;
-      member.save(function(err, user) {
+      member.save().then().catch(err => {
         if(err) res.status(404).send("Failed to save to database."); // Failure
-        else res.status(204).send(""); // Success, no response
+        else res.status(204).send(""); // Created
       });
     }
   });
@@ -165,7 +180,7 @@ app.get('/api/set/:css',
 
 app.get('/api/colour',
         function(req, res) {
-  Member.findOne({ '_id': req.user._json.sub }, function(err, member) {
+  Member.findOne({ '_id': req.user.id }).then((member)=>{
     if(member != null)
       res.status(200).send("#" + getTheme(member.css).colour);
     else res.status(200).send("#" + getTheme(process.env.DEFAULT_CSS).colour);
@@ -180,10 +195,10 @@ git.short(function(commit) {
 });
 
 app.get('/local',
-        function(req, res) {
-  var uid = req.user._json.preferred_username;
-  var name = req.user._json.given_name + " " + req.user._json.family_name;
-  res.status(200).send({ "uid": uid, "name": name, "rev": rev });
+  function(req, res) {
+    var uid = req.user.username;
+    var name = req.user.given_name + " " + req.user.family_name;
+    res.status(200).send({ "uid": uid, "name": name, "rev": rev });
 });
 
 app.listen(parseInt(process.env.PORT));
