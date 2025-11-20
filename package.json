@@ -6,7 +6,7 @@
     ],
     "name": "cshthemeswitcher",
     "devDependencies": {
-        "npm": "^11.6.0"
+        "npm": "^11.6.2"
     },
     "dependencies": {
         "angular": "^1.6.9",
